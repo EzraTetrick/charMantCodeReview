@@ -13,6 +13,8 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 
+bool convert_to_char(int c, int n, int d, char result[], int len);
+
 int main()
 {
     //this c-string, or array of 8 characters, ends with the null terminating character '\0'
@@ -24,9 +26,9 @@ int main()
     if(characteristic(number, c) && mantissa(number, n, d))
     {
         //do some math with c, n, and d
-        cout<<"c: "<<c<<endl;
-        cout<<"n: "<<n<<endl;
-        cout<<"d: "<<d<<endl;
+        //cout<<"c: "<<c<<endl;
+        //cout<<"n: "<<n<<endl;
+        //cout<<"d: "<<d<<endl;
     }
     else //at least one of the conversions failed
     {
@@ -60,6 +62,18 @@ int main()
         //display error message
         cout<<"Error on add"<<endl;
     }
+    char answer_2[10];
+    if(subtract(c1, n1, d1, c2, n2, d2, answer_2, 10))
+    {
+        //display string with answer 4.1666666 (cout stops printing at the null terminating character)
+        cout<<"Answer: "<<answer_2<<endl;
+    }
+    else
+    {
+        //display error message
+        cout<<"Error on add"<<endl;
+    }
+
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
     {
@@ -92,67 +106,52 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
 //--
 bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    c1 = 999999999;
-    c2 = 999999999;
+    c1 = 10;
+    c2 = 100;
+    n1 = 500;
+    n2 = 250;
+    d1 = 1000;
+    d2 = 1000;
 
     //add the two characteristics together
-    int c = c1 + c2;
+    int characteristic = c1 + c2;
 
-    //cross multiply the numerator and denominators to find common denom
-    //TODO better names
-    int n = n1 * d2 + n2 * d1;
-    int d = d1 * d2;
+    //cross multiply the numerator and denominators to find common denom and add
+    int numerator = n1 * d2 + n2 * d1;
+    int denominator = d1 * d2;
 
-    c += n / d;
-    n %= d;
+    //add the carry from the fractional part to characteristic
+    characteristic += numerator / denominator;
+    //remove the carry from the denominator
+    numerator %= denominator;
 
-    std::cout << c << "\t" << n << "\t" << d << endl;
+    //std::cout << c << "\t" << n << "\t" << d << endl;
 
-    int index = 0;
-    //check if characteristic is negative
-    if(c < 0){
-        result[index] = '-';
-        //make charateristic positive
-        c *= -1;
-        index++;
-    }
-
-    //characteristic is 0
-    if(c == 0){
-        result[index] = '0';
-        index++;
-    }
-    //TODO handle number longer than 10 digits
-    //characteristic is not zero and is positive now
-    else{
-        int num_digit = 0;
-        int temp = c; //find better name
-        
-        //count the number of digits in c
-        while(temp > 0){
-            temp = temp / 10;
-            num_digit++;
-        }
-        cout << "num_digit: " << num_digit << endl;
-
-        for (int i = num_digit - 1; i >= 0; --i) {
-            //convert the first digit to a char
-            result[index + i] = '0' + (c % 10);
-            c = c / 10;
-        }
-        index += num_digit;
-    }
-
-    cout << "result: " << (result) << endl;
-
-    return true;
+    return convert_to_char(characteristic, numerator, denominator, result, len);
 }
 //--
-bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
-{
-    //hard coded return value to make the code compile
-    //you will have to come up with an algorithm to subtract the two numbers
-    return true;
+bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len){
+    c1 = 5;
+    c2 = 10;
+    n1 = 0;
+    n2 = 0;
+    d1 = 1000;
+    d2 = 1000;
+
+    // Subtract the two characteristics
+    int characteristic = c1 - c2;
+
+    // Find common denominator and calculate new numerator
+    int numerator = (n1 * d2) - (n2 * d1);
+    int denominator = d1 * d2;
+
+    // Adjust characteristic if numerator is negative
+    if (numerator < 0) {
+        characteristic -= 1;   // Borrow from characteristic
+        numerator += denominator;  // Make numerator positive
+    }
+
+    return convert_to_char(characteristic, numerator, denominator, result, len);
 }
 //--
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
@@ -174,5 +173,75 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
     result[5] = '5';
     result[6] = '\0';
     
+    return true;
+}
+
+bool convert_to_char(int c, int n, int d, char result[], int len){
+    int num_digit_c = 0;
+    int num_digit_n = 0;
+    int index = 0;
+    //check if characteristic is negative
+    if (c < 0){
+        result[index] = '-';
+        //make charateristic positive
+        c *= -1;
+        index++;
+    }
+
+    //characteristic is 0
+    if (c == 0){
+        result[index] = '0';
+        index++;
+    }
+
+    //TODO handle number longer than 10 digits
+    //characteristic is not zero and is positive now    
+    else{
+        int temp = c; //find better name
+        
+        //count the number of digits in c
+        while (temp > 0){
+            temp = temp / 10;
+            num_digit_c++;
+        }
+
+        //check if c is too big to fit in array
+        if (num_digit_c > len - 1){
+            cout << "Charateristic is too large to fit inside char array" << endl;
+            return false;
+        }
+
+        cout << "num digit in c: " << num_digit_c << endl;
+
+        //iterate over the digits in c from right to left
+        for (int i = num_digit_c - 1; i >= 0; --i) {
+            //convert the first digit to a char
+            result[index + i] = '0' + (c % 10);
+            //cout << result[index + i] << endl;
+            //integer division by 10 to get rid of first digit (the rightmost one)
+            c = c / 10;
+        }
+        index += num_digit_c;
+    }
+
+    if (n > 0) {
+        if (index < len - 1){
+            result[index] = '.';
+            index++;
+            for (index; index < len - 1; index++) {
+                //ignore trailing zeros
+                if (n > 0){
+                    n *= 10;
+                    result[index] = '0' + (n / d);
+                    n %= d;
+                }
+            }
+        }
+    }
+
+    result[index] = '\0';
+
+    cout << "result: " << (result) << endl;
+
     return true;
 }
