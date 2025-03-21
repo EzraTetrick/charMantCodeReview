@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <cstring> // for testing, remove later
 using namespace std;
 
 //required function prototypes
@@ -45,6 +46,7 @@ int main()
 
     c2 = 2;
     n2 = 2;
+
     d2 = 3; 
 
     //if the c-string can hold at least the characteristic
@@ -90,18 +92,58 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
 //--
 bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    //you will have to come up with an algorithm to add the two numbers
-    //hard coded return value to make the main() work
-    result[0] = '4';
-    result[1] = '.';
-    result[2] = '1';
-    result[3] = '6';
-    result[4] = '6';
-    result[5] = '6';
-    result[6] = '6';
-    result[7] = '6';
-    result[8] = '6';
-    result[9] = '\0';
+    c1 = 999999999;
+    c2 = 999999999;
+
+    //add the two characteristics together
+    int c = c1 + c2;
+
+    //cross multiply the numerator and denominators to find common denom
+    //TODO better names
+    int n = n1 * d2 + n2 * d1;
+    int d = d1 * d2;
+
+    c += n / d;
+    n %= d;
+
+    std::cout << c << "\t" << n << "\t" << d << endl;
+
+    int index = 0;
+    //check if characteristic is negative
+    if(c < 0){
+        result[index] = '-';
+        //make charateristic positive
+        c *= -1;
+        index++;
+    }
+
+    //characteristic is 0
+    if(c == 0){
+        result[index] = '0';
+        index++;
+    }
+    //TODO handle number longer than 10 digits
+    //characteristic is not zero and is positive now
+    else{
+        int num_digit = 0;
+        int temp = c; //find better name
+        
+        //count the number of digits in c
+        while(temp > 0){
+            temp = temp / 10;
+            num_digit++;
+        }
+        cout << "num_digit: " << num_digit << endl;
+
+        for (int i = num_digit - 1; i >= 0; --i) {
+            //convert the first digit to a char
+            result[index + i] = '0' + (c % 10);
+            c = c / 10;
+        }
+        index += num_digit;
+    }
+
+    cout << "result: " << (result) << endl;
 
     return true;
 }
