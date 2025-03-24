@@ -54,11 +54,12 @@ int main()
 
     d2 = 3; 
 
-    //addition tests
     int len = 10;
     char test[len] = {'0'};
     char expected[len] = {'0'};
 
+    //addition tests
+    cout << "=====Addition Tests=====" << endl;
     //1 + 1
     expected[0] = '2';
     add(1, 0, 100, 1, 0, 100, test, len);
@@ -87,19 +88,36 @@ int main()
     add(1, 0, 10, -5, 5, 10, test, len);
     check_answer(test, expected);
     clear_answers(test, expected, len);
-    
-    char answer_2[10] = {'0'};
-    if(subtract(c1, n1, d1, c2, n2, d2, answer_2, 10))
-    {
-        //display string with answer 4.1666666 (cout stops printing at the null terminating character)
-        //cout<<"Answer: "<<answer_2<<endl;
+
+    //check for characteristic too large
+    if(!add(999999999, 0, 10, 999999999, 0, 10, test, len)){
+        cout << "Test passed" << endl;
+        cout << "Characteristic is too large" << endl << endl;
     }
-    else
-    {
-        //display error message
-        cout<<"Error on add"<<endl;
+    
+    //check for division by zero
+    if(!add(1, 0, 0, 1, 0, 0, test, len)){
+        cout << "Test passed" << endl;
+        cout << "Division by 0" << endl << endl;
     }
 
+    //subtraction tests
+    cout << "=====Subtraction Tests=====" << endl;
+    //2 - 1
+    expected[0] = '1';
+    subtract(2, 0, 100, 1, 0, 100, test, len);
+    check_answer(test, expected);
+    clear_answers(test, expected, len);
+
+    //0 - 2.75
+    expected[0] = '-';
+    expected[1] = '2';
+    expected[2] = '.';
+    expected[3] = '7';
+    expected[4] = '5';
+    subtract(0, 0, 100, 2, 75, 100, test, len);
+    check_answer(test, expected);
+    clear_answers(test, expected, len);
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
     {
@@ -173,12 +191,9 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 }
 //--
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len){
-    c1 = -10;
-    c2 = 0;
-    n1 = 0;
-    n2 = 10;
-    d1 = 10;
-    d2 = 10;
+    if (len <= 0){
+        return false;
+    }
 
     // Subtract the two characteristics
     int characteristic = c1 - c2;
@@ -187,12 +202,34 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     int numerator = (n1 * d2) - (n2 * d1);
     int denominator = d1 * d2;
 
-    // Adjust characteristic if numerator is negative
-    if (numerator < 0) {
-        characteristic -= 1;   // Borrow from characteristic
-        numerator += denominator;  //add borrowed value to mantissa
+    //cout << "c: " << characteristic << "\tm: " << numerator << endl;
+
+
+    //check that denom is greater than 0
+    if(denominator <= 0){
+        return false;
     }
 
+    // // Adjust characteristic if numerator is negative
+    // if (numerator < 0) {
+    //     //characteristic -= 1;   // Borrow from characteristic
+    //     numerator += denominator;  //add borrowed value to mantissa
+    // }
+
+    // Adjust characteristic if numerator is negative
+    // if (numerator < 0) {
+    //     if (characteristic > 0) {
+    //         characteristic -= 1;
+    //         numerator += denominator;
+    //     } else if (characteristic == 0) {
+    //         // Directly adjust without decreasing characteristic further
+    //         numerator = -numerator;
+    //         //characteristic = -1;
+    //     } else {
+    //         characteristic -= 1;
+    //         numerator = denominator - (-numerator);
+    //     }
+    // }
     //cout << "c: " << characteristic << "\tm: " << numerator << endl;
 
     convert_to_char(characteristic, numerator, denominator, result, len);
@@ -226,7 +263,7 @@ void convert_to_char(int c, int n, int d, char result[], int len){
     int num_digit = count_digits(c);
     int index = 0;
     //check if characteristic is negative
-    if (c < 0){
+    if (c < 0 || n < 0){
         result[index] = '-';
         //make charateristic positive
         c *= -1;
@@ -256,11 +293,14 @@ void convert_to_char(int c, int n, int d, char result[], int len){
     }
 
     //TODO comments
-    if (n > 0) {
-        if (index < len - 1){
-            result[index] = '.';
-            index++;
+    if (n < 0){
+        n = -n;
+    }
 
+    if (n > 0){
+        if (index < len - 1){
+            result[index++] = '.';
+    
             //add values from the matissa until end of array
             for (index; index < len - 1 && n > 0; index++) {
                 n *= 10;
@@ -269,6 +309,9 @@ void convert_to_char(int c, int n, int d, char result[], int len){
             }
         }
     }
+    
+    
+    
     //cout << "length: " << strlen(result) << endl;
 
     result[index] = '\0';
