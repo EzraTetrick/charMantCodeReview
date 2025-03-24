@@ -15,9 +15,9 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 
 void convert_to_char(int c, int n, int d, char result[], int len);
 int count_digits(int c);
-void check_answer(char output[], char expected[]);
 void clear_answers(string test_name, char a[], char b[], int len);
 void test_addition(char test[], char expected[], int len);
+void test_subtraction(char test[], char expected[], int len);
 void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
     int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
     string test_name, char expected[]);
@@ -66,46 +66,7 @@ int main()
     test_addition(test, expected, len);
 
     //subtraction tests
-    // cout << "=====Subtraction Tests=====" << endl;
-    // //2 - 1
-    // expected[0] = '1';
-    // subtract(2, 0, 100, 1, 0, 100, test, len);
-    // check_answer(test, expected);
-    // clear_answers(test, expected, len);
-
-    // //0 - 2.75
-    // expected[0] = '-';
-    // expected[1] = '2';
-    // expected[2] = '.';
-    // expected[3] = '7';
-    // expected[4] = '5';
-    // subtract(0, 0, 100, 2, 75, 100, test, len);
-    // check_answer(test, expected);
-    // clear_answers(test, expected, len);
-
-    // //-5 - (-10)
-    // expected[0] = '5';
-    // subtract(-5, 0, 100, -10, 0, 100, test, len);
-    // check_answer(test, expected);
-    // clear_answers(test, expected, len);
-
-    // //1.75 - 3.25
-    // expected[0] = '-';
-    // expected[1] = '1';
-    // expected[2] = '.';
-    // expected[3] = '5';
-    // subtract(1, 75, 100, 3, 25, 100, test, len);
-    // check_answer(test, expected);
-    // clear_answers(test, expected, len);
-
-    // //3.25 - 1.75
-    // expected[0] = '-';
-    // expected[1] = '1';
-    // expected[2] = '.';
-    // expected[3] = '5';
-    // subtract(1, 75, 100, 3, 25, 100, test, len);
-    // check_answer(test, expected);
-    // clear_answers(test, expected, len);
+    test_subtraction(test, expected, len);
 
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
@@ -234,6 +195,7 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
     return true;
 }
 
+//this function takes the result from one of the math function and converts it to a char array
 void convert_to_char(int c, int n, int d, char result[], int len){
     int num_digit = count_digits(c);
     int index = 0;
@@ -305,20 +267,6 @@ int count_digits(int c){
     }
 
     return num_digit;
-}
-
-void check_answer(string test_name, char output[], char expected[]){
-    cout << "Test: " << test_name << endl;
-    cout << "Expected: " << expected << "\tAnswer: " << output << endl;
-    
-    if (strcmp(output, expected) == 0){
-        cout << "PASSED" << endl;
-    }
-    else if (strcmp(output, expected) != 0){
-        cout << "FAILED" << endl;
-    }
-    cout << endl;
-    
 }
 
 void clear_answers(char a[], char b[], int len){
@@ -396,3 +344,44 @@ void test_addition(char test[], char expected[], int len){
     }
 }
 
+void test_subtraction(char test[], char expected[], int len){
+    cout << "=====Subtraction Tests=====" << endl;
+    //2 - 1
+    expected[0] = '1';
+    test_function(subtract, 2, 0, 100, 1, 0, 100, test, len, "2 - 1", expected);
+
+    //0 - 2.75
+    expected[0] = '-';
+    expected[1] = '2';
+    expected[2] = '.';
+    expected[3] = '7';
+    expected[4] = '5';
+    test_function(subtract, 0, 0, 100, 2, 75, 100, test, len, "0 - 2.75", expected);
+
+    //-5 - (-10)
+    expected[0] = '5';
+    test_function(subtract, -5, 0, 100, -10, 0, 100, test, len, "-5 - (-10)", expected);
+
+    //1.75 - 3.25
+    expected[0] = '-';
+    expected[1] = '1';
+    expected[2] = '.';
+    expected[3] = '5';
+    test_function(subtract, 1, 75, 100, 3, 25, 100, test, len, "1.75 - 3.25", expected);
+
+    //3.25 - 1.75
+    expected[0] = '-';
+    expected[1] = '1';
+    expected[2] = '.';
+    expected[3] = '5';
+    test_function(subtract, 1, 75, 100, 3, 25, 100, test, len, "3.25 - 1.75", expected);
+
+    //-1.5 - 1.25
+    expected[0] = '-';
+    expected[1] = '2';
+    expected[2] = '.';
+    expected[3] = '7';
+    expected[3] = '5';
+    test_function(subtract, 1, 5, 10, -1, 25, 100, test, len, "-1.5 - 1.25", expected);
+
+}
