@@ -119,6 +119,12 @@ int main()
     check_answer(test, expected);
     clear_answers(test, expected, len);
 
+    //-5 - (-10)
+    expected[0] = '5';
+    subtract(-5, 0, 100, -10, 0, 100, test, len);
+    check_answer(test, expected);
+    clear_answers(test, expected, len);
+
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
     {
         //display string with answer
@@ -202,35 +208,10 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     int numerator = (n1 * d2) - (n2 * d1);
     int denominator = d1 * d2;
 
-    //cout << "c: " << characteristic << "\tm: " << numerator << endl;
-
-
     //check that denom is greater than 0
     if(denominator <= 0){
         return false;
     }
-
-    // // Adjust characteristic if numerator is negative
-    // if (numerator < 0) {
-    //     //characteristic -= 1;   // Borrow from characteristic
-    //     numerator += denominator;  //add borrowed value to mantissa
-    // }
-
-    // Adjust characteristic if numerator is negative
-    // if (numerator < 0) {
-    //     if (characteristic > 0) {
-    //         characteristic -= 1;
-    //         numerator += denominator;
-    //     } else if (characteristic == 0) {
-    //         // Directly adjust without decreasing characteristic further
-    //         numerator = -numerator;
-    //         //characteristic = -1;
-    //     } else {
-    //         characteristic -= 1;
-    //         numerator = denominator - (-numerator);
-    //     }
-    // }
-    //cout << "c: " << characteristic << "\tm: " << numerator << endl;
 
     convert_to_char(characteristic, numerator, denominator, result, len);
 
@@ -269,8 +250,6 @@ void convert_to_char(int c, int n, int d, char result[], int len){
         c *= -1;
         index++;
     }
-    // cout << count_digits(c) << endl;   
-    // cout << c << endl;
 
     //characteristic is 0
     if (c == 0){
@@ -284,7 +263,6 @@ void convert_to_char(int c, int n, int d, char result[], int len){
         for (int i = num_digit - 1; i >= 0; i--) {
             //convert the first digit to a char
             result[index + i] = '0' + (c % 10);
-            //cout << result[index + i] << endl;
             //integer division by 10 to get rid of first digit (the rightmost one)
             c = c / 10;
         }
