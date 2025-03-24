@@ -125,6 +125,25 @@ int main()
     check_answer(test, expected);
     clear_answers(test, expected, len);
 
+    //1.75 - 3.25
+    expected[0] = '-';
+    expected[1] = '1';
+    expected[2] = '.';
+    expected[3] = '5';
+    subtract(1, 75, 100, 3, 25, 100, test, len);
+    check_answer(test, expected);
+    clear_answers(test, expected, len);
+
+    //3.25 - 1.75
+    expected[0] = '-';
+    expected[1] = '1';
+    expected[2] = '.';
+    expected[3] = '5';
+    subtract(1, 75, 100, 3, 25, 100, test, len);
+    check_answer(test, expected);
+    clear_answers(test, expected, len);
+
+
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
     {
         //display string with answer
@@ -189,7 +208,7 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 
     numerator %= denominator;
 
-    //std::cout << characteristic << "\t" << numerator << "\t" << denominator << endl;
+    //cout << characteristic << "\t" << numerator << "\t" << denominator << endl;
 
     convert_to_char(characteristic, numerator, denominator, result, len);
 
@@ -205,15 +224,21 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     int characteristic = c1 - c2;
 
     // Find common denominator and calculate new numerator
-    int numerator = (n1 * d2) - (n2 * d1);
-    int denominator = d1 * d2;
+    int numerator_1 = (n1 * d2);
+    int numerator_2 = (n2 * d1);
 
-    //check that denom is greater than 0
-    if(denominator <= 0){
-        return false;
+    //borrow from the characteristic if needed
+    if (numerator_2 < numerator_1){
+        characteristic += 1;
+        numerator_2 = numerator_2 + (1 * d1 * d2);
     }
 
-    convert_to_char(characteristic, numerator, denominator, result, len);
+    int new_numerator = numerator_1 - numerator_2;
+    int denominator = d1 * d2;
+
+    // cout << "C: " << characteristic << "\tM: " << new_numerator << endl;
+
+    convert_to_char(characteristic, new_numerator, denominator, result, len);
 
     return true;
 }
