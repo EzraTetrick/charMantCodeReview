@@ -14,6 +14,7 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 
 bool convert_to_char(int c, int n, int d, char result[], int len);
+int count_digits(int c);
 
 int main()
 {
@@ -116,6 +117,11 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
     //add the two characteristics together
     int characteristic = c1 + c2;
 
+    //characteristic won't fit in result array
+    if (count_digits(characteristic) > len - 1){
+        return false;
+    }
+
     //cross multiply the numerator and denominators to find common denom and add
     int numerator = n1 * d2 + n2 * d1;
     int denominator = d1 * d2;
@@ -179,7 +185,7 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 }
 
 bool convert_to_char(int c, int n, int d, char result[], int len){
-    int num_digit = 0;
+    int num_digit = count_digits(c);
     int index = 0;
     //check if characteristic is negative
     if (c < 0){
@@ -198,20 +204,6 @@ bool convert_to_char(int c, int n, int d, char result[], int len){
     //TODO handle number longer than 10 digits
     //characteristic is not zero and is positive now    
     else{
-        int temp = c; //find better name
-        
-        //count the number of digits in c
-        while (temp > 0){
-            temp = temp / 10;
-            num_digit++;
-        }
-
-        //check if c is too big to fit in array
-        if (num_digit > len - 1){
-            //cout << "Charateristic is too large to fit inside char array" << endl;
-            return false;
-        }
-
         //cout << "num digit in c: " << num_digit << endl;
 
         //iterate over the digits in c from right to left
@@ -226,6 +218,7 @@ bool convert_to_char(int c, int n, int d, char result[], int len){
         index += num_digit;
     }
 
+    //TODO comments
     if (n > 0) {
         if (index < len - 1){
             result[index] = '.';
@@ -246,4 +239,15 @@ bool convert_to_char(int c, int n, int d, char result[], int len){
     //cout << "result: " << (result) << endl;
 
     return true;
+}
+
+int count_digits(int c){
+    //count number of digits in characteristic
+    int num_digit = 0;
+    while (c > 0){
+        c = c / 10;
+        num_digit++;
+    }
+
+    return num_digit;
 }
