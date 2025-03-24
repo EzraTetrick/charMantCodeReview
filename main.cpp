@@ -52,17 +52,17 @@ int main()
     d2 = 3; 
 
     //if the c-string can hold at least the characteristic
-    if(add(c1, n1, d1, c2, n2, d2, answer, 10))
-    {
-        //display string with answer 4.1666666 (cout stops printing at the null terminating character)
-        cout<<"Answer: "<<answer<<endl;
-    }
-    else
-    {
-        //display error message
-        cout<<"Error on add"<<endl;
-    }
-    char answer_2[10];
+    // if(add(c1, n1, d1, c2, n2, d2, answer, 10))
+    // {
+    //     //display string with answer 4.1666666 (cout stops printing at the null terminating character)
+    //     cout<<"Answer: "<<answer<<endl;
+    // }
+    // else
+    // {
+    //     //display error message
+    //     cout<<"Error on add"<<endl;
+    // }
+    char answer_2[10] = {'0'};
     if(subtract(c1, n1, d1, c2, n2, d2, answer_2, 10))
     {
         //display string with answer 4.1666666 (cout stops printing at the null terminating character)
@@ -131,12 +131,12 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 }
 //--
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len){
-    c1 = 5;
-    c2 = 10;
+    c1 = -10;
+    c2 = 0;
     n1 = 0;
-    n2 = 0;
-    d1 = 1000;
-    d2 = 1000;
+    n2 = 10;
+    d1 = 10;
+    d2 = 10;
 
     // Subtract the two characteristics
     int characteristic = c1 - c2;
@@ -148,8 +148,10 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     // Adjust characteristic if numerator is negative
     if (numerator < 0) {
         characteristic -= 1;   // Borrow from characteristic
-        numerator += denominator;  // Make numerator positive
+        numerator += denominator;  //add borrowed value to mantissa
     }
+
+    //cout << "c: " << characteristic << "\tm: " << numerator << endl;
 
     return convert_to_char(characteristic, numerator, denominator, result, len);
 }
@@ -177,8 +179,7 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 }
 
 bool convert_to_char(int c, int n, int d, char result[], int len){
-    int num_digit_c = 0;
-    int num_digit_n = 0;
+    int num_digit = 0;
     int index = 0;
     //check if characteristic is negative
     if (c < 0){
@@ -202,46 +203,47 @@ bool convert_to_char(int c, int n, int d, char result[], int len){
         //count the number of digits in c
         while (temp > 0){
             temp = temp / 10;
-            num_digit_c++;
+            num_digit++;
         }
 
         //check if c is too big to fit in array
-        if (num_digit_c > len - 1){
-            cout << "Charateristic is too large to fit inside char array" << endl;
+        if (num_digit > len - 1){
+            //cout << "Charateristic is too large to fit inside char array" << endl;
             return false;
         }
 
-        cout << "num digit in c: " << num_digit_c << endl;
+        //cout << "num digit in c: " << num_digit << endl;
 
         //iterate over the digits in c from right to left
-        for (int i = num_digit_c - 1; i >= 0; --i) {
+        for (int i = num_digit - 1; i >= 0; --i) {
             //convert the first digit to a char
             result[index + i] = '0' + (c % 10);
             //cout << result[index + i] << endl;
             //integer division by 10 to get rid of first digit (the rightmost one)
             c = c / 10;
         }
-        index += num_digit_c;
+        //move index to correct position in result [] after adding digits in the charateristics
+        index += num_digit;
     }
 
     if (n > 0) {
         if (index < len - 1){
             result[index] = '.';
             index++;
+
+            //add values from the matissa until 
             for (index; index < len - 1; index++) {
-                //ignore trailing zeros
-                if (n > 0){
-                    n *= 10;
-                    result[index] = '0' + (n / d);
-                    n %= d;
-                }
+                n *= 10;
+                result[index] = '0' + (n / d);
+                n %= d;
             }
         }
     }
+    //cout << "length: " << strlen(result) << endl;
 
     result[index] = '\0';
 
-    cout << "result: " << (result) << endl;
+    //cout << "result: " << (result) << endl;
 
     return true;
 }
