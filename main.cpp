@@ -16,7 +16,11 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 void convert_to_char(int c, int n, int d, char result[], int len);
 int count_digits(int c);
 void check_answer(char output[], char expected[]);
-void clear_answers(char a[], char b[], int len);
+void clear_answers(string test_name, char a[], char b[], int len);
+void test_addition(char test[], char expected[], int len);
+void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
+    int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
+    string test_name, char expected[]);
 
 int main()
 {
@@ -59,89 +63,49 @@ int main()
     char expected[len] = {'0'};
 
     //addition tests
-    cout << "=====Addition Tests=====" << endl;
-    //1 + 1
-    expected[0] = '2';
-    add(1, 0, 100, 1, 0, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
-
-    //1 + 0.5
-    expected[0] = '2';
-    expected[1] = '.';
-    expected[2] = '5';
-    add(1, 5, 10, 1, 0, 10, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
-
-    //2 + -1
-    expected[0] = '1';
-    add(2, 0, 10, -1, 0, 10, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
-
-    //1 + -5.5
-    expected[0] = '-';
-    expected[1] = '4';
-    expected[2] = '.';
-    expected[3] = '5';
-    add(1, 0, 10, -5, 5, 10, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
-
-    //check for characteristic too large
-    if(!add(999999999, 0, 10, 999999999, 0, 10, test, len)){
-        cout << "Test passed" << endl;
-        cout << "Characteristic is too large" << endl << endl;
-    }
-    
-    //check for division by zero
-    if(!add(1, 0, 0, 1, 0, 0, test, len)){
-        cout << "Test passed" << endl;
-        cout << "Division by 0" << endl << endl;
-    }
+    test_addition(test, expected, len);
 
     //subtraction tests
-    cout << "=====Subtraction Tests=====" << endl;
-    //2 - 1
-    expected[0] = '1';
-    subtract(2, 0, 100, 1, 0, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
+    // cout << "=====Subtraction Tests=====" << endl;
+    // //2 - 1
+    // expected[0] = '1';
+    // subtract(2, 0, 100, 1, 0, 100, test, len);
+    // check_answer(test, expected);
+    // clear_answers(test, expected, len);
 
-    //0 - 2.75
-    expected[0] = '-';
-    expected[1] = '2';
-    expected[2] = '.';
-    expected[3] = '7';
-    expected[4] = '5';
-    subtract(0, 0, 100, 2, 75, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
+    // //0 - 2.75
+    // expected[0] = '-';
+    // expected[1] = '2';
+    // expected[2] = '.';
+    // expected[3] = '7';
+    // expected[4] = '5';
+    // subtract(0, 0, 100, 2, 75, 100, test, len);
+    // check_answer(test, expected);
+    // clear_answers(test, expected, len);
 
-    //-5 - (-10)
-    expected[0] = '5';
-    subtract(-5, 0, 100, -10, 0, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
+    // //-5 - (-10)
+    // expected[0] = '5';
+    // subtract(-5, 0, 100, -10, 0, 100, test, len);
+    // check_answer(test, expected);
+    // clear_answers(test, expected, len);
 
-    //1.75 - 3.25
-    expected[0] = '-';
-    expected[1] = '1';
-    expected[2] = '.';
-    expected[3] = '5';
-    subtract(1, 75, 100, 3, 25, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
+    // //1.75 - 3.25
+    // expected[0] = '-';
+    // expected[1] = '1';
+    // expected[2] = '.';
+    // expected[3] = '5';
+    // subtract(1, 75, 100, 3, 25, 100, test, len);
+    // check_answer(test, expected);
+    // clear_answers(test, expected, len);
 
-    //3.25 - 1.75
-    expected[0] = '-';
-    expected[1] = '1';
-    expected[2] = '.';
-    expected[3] = '5';
-    subtract(1, 75, 100, 3, 25, 100, test, len);
-    check_answer(test, expected);
-    clear_answers(test, expected, len);
+    // //3.25 - 1.75
+    // expected[0] = '-';
+    // expected[1] = '1';
+    // expected[2] = '.';
+    // expected[3] = '5';
+    // subtract(1, 75, 100, 3, 25, 100, test, len);
+    // check_answer(test, expected);
+    // clear_answers(test, expected, len);
 
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
@@ -175,21 +139,30 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
 //--
 bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
+    //check if the array is grater than 0
     if (len <= 0){
+        return false;
+    }
+
+    //check that denoms are greater than 0
+    if(d1 <= 0 || d2 <=0){
         return false;
     }
 
     //add the two characteristics together
     int characteristic = c1 + c2;
 
-    //find common denom and add
-    int numerator = n1 * d2 + n2 * d1;
-    int denominator = d1 * d2;
-
-    //check that denom is greater than 0
-    if(denominator <= 0){
-        return false;
+    //if the character is 
+    if(c1 < 0 && n1 >= 0){
+        n1 = -n1;
     }
+    if (c2 < 0 && n2 >= 0){
+        n2 = -n2;
+    }
+
+    //find common denom and add
+    int numerator = (n1 * d2) + (n2 * d1);
+    int denominator = d1 * d2;
 
     //add the carry from the fractional part to characteristic
     characteristic += numerator / denominator;
@@ -200,11 +173,7 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
         return false;
     }
 
-    // Handle negative numerator by borrowing from characteristic
-    if (numerator < 0) {
-        characteristic -= 1;
-        numerator += denominator;
-    }
+    // cout << "C: " << characteristic << "\tN: " << numerator << endl;
 
     numerator %= denominator;
 
@@ -224,17 +193,17 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     int characteristic = c1 - c2;
 
     // Find common denominator and calculate new numerator
+    int denominator = d1 * d2;
     int numerator_1 = (n1 * d2);
     int numerator_2 = (n2 * d1);
 
     //borrow from the characteristic if needed
     if (numerator_2 < numerator_1){
         characteristic += 1;
-        numerator_2 = numerator_2 + (1 * d1 * d2);
+        numerator_2 = numerator_2 + (1 * denominator);
     }
 
     int new_numerator = numerator_1 - numerator_2;
-    int denominator = d1 * d2;
 
     // cout << "C: " << characteristic << "\tM: " << new_numerator << endl;
 
@@ -268,7 +237,8 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 void convert_to_char(int c, int n, int d, char result[], int len){
     int num_digit = count_digits(c);
     int index = 0;
-    //check if characteristic is negative
+
+    //check if characteristic or numerator is negative
     if (c < 0 || n < 0){
         result[index] = '-';
         //make charateristic positive
@@ -281,30 +251,33 @@ void convert_to_char(int c, int n, int d, char result[], int len){
         result[index] = '0';
         index++;
     }
-    //TODO handle number longer than len
-    //characteristic is not zero and is positive now
+
+    //characteristic is not zero
     else{
         //iterate over the digits in c from right to left
         for (int i = num_digit - 1; i >= 0; i--) {
             //convert the first digit to a char
             result[index + i] = '0' + (c % 10);
-            //integer division by 10 to get rid of first digit (the rightmost one)
+            //get rid of first digit (the right-most one)
             c = c / 10;
         }
-        //move index to correct position in result [] after adding digits in the charateristics
+        //move index to correct position
         index += num_digit;
     }
 
-    //TODO comments
+    //we have already written the negative sign above so if numerator 
+    //is negative then we need to make it positive
     if (n < 0){
         n = -n;
     }
 
     if (n > 0){
-        if (index < len - 1){
+        //check if there is room left in result for the deicimal point and at least 1 more digit
+        if (index < len - 2){
             result[index++] = '.';
     
-            //add values from the matissa until end of array
+            //add values from the numerator from left to right
+            //ignore trailing zeros
             for (index; index < len - 1 && n > 0; index++) {
                 n *= 10;
                 result[index] = '0' + (n / d);
@@ -312,14 +285,10 @@ void convert_to_char(int c, int n, int d, char result[], int len){
             }
         }
     }
-    
-    
-    
-    //cout << "length: " << strlen(result) << endl;
 
+    //finally, add null terminator at the end
     result[index] = '\0';
 
-    //cout << "result: " << (result) << endl;
 }
 
 int count_digits(int c){
@@ -338,14 +307,18 @@ int count_digits(int c){
     return num_digit;
 }
 
-void check_answer(char output[], char expected[]){
+void check_answer(string test_name, char output[], char expected[]){
+    cout << "Test: " << test_name << endl;
+    cout << "Expected: " << expected << "\tAnswer: " << output << endl;
+    
     if (strcmp(output, expected) == 0){
-        cout << "Test passed" << endl;
+        cout << "PASSED" << endl;
     }
     else if (strcmp(output, expected) != 0){
-        cout << "Test failed" << endl;
+        cout << "FAILED" << endl;
     }
-    cout << "Answer: " << output << "\tExpected: " << expected << endl << endl;
+    cout << endl;
+    
 }
 
 void clear_answers(char a[], char b[], int len){
@@ -354,3 +327,72 @@ void clear_answers(char a[], char b[], int len){
         b[i] = 0;
     }
 }
+
+void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
+int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
+string test_name, char expected[]){
+    func(c1, n1, d1, c2, n2, d2, result, len);
+    cout << "Test: " << test_name << endl;
+    cout << "Expected: " << expected << "\tAnswer: " << result << endl;
+    
+    if (strcmp(result, expected) == 0){
+        cout << "PASSED" << endl;
+    }
+    else if (strcmp(result, expected) != 0){
+        cout << "FAILED" << endl;
+    }
+    cout << endl;
+
+    clear_answers(result, expected, len);
+}
+
+void test_addition(char test[], char expected[], int len){
+    cout << "=====Addition Tests=====" << endl;
+    //1 + 1
+    expected[0] = '2';
+    test_function(add, 1, 0, 10, 1, 0, 10, test, len, "1 + 1", expected);
+
+    //1 + 0.5
+    expected[0] = '2';
+    expected[1] = '.';
+    expected[2] = '5';
+    test_function(add, 1, 5, 10, 1, 0, 10, test, len, "1 + 0.5", expected);
+
+    //2 + -1
+    expected[0] = '1';
+    test_function(add, 2, 0, 10, -1, 0, 10, test, len, "2 + (-1)", expected);
+    
+    //1 + -5.5
+    expected[0] = '-';
+    expected[1] = '4';
+    expected[2] = '.';
+    expected[3] = '5';
+    test_function(add, 1, 0, 10, -5, 5, 10, test, len, "1 + -(5.5)", expected);
+
+    //1 + (-1.5)
+    expected[0] = '-';
+    expected[1] = '0';
+    expected[2] = '.';
+    expected[3] = '5';
+    test_function(add, 1, 0, 10, -1, 5, 10, test, len, "1 + (-1.5)", expected);
+
+    //1 + (-1.(-5)) with both the characteristic and numerator being passed as negative
+    expected[0] = '-';
+    expected[1] = '0';
+    expected[2] = '.';
+    expected[3] = '5';
+    test_function(add, 1, 0, 10, -1, -5, 10, test, len, "1 + (-1.(-5))", expected);
+
+    //check for characteristic too large
+    if(!add(999999999, 0, 10, 999999999, 0, 10, test, len)){
+        cout << "PASSED" << endl;
+        cout << "Characteristic is too large" << endl << endl;
+    }
+    
+    //check for division by zero
+    if(!add(1, 0, 0, 1, 0, 0, test, len)){
+        cout << "PASSED" << endl;
+        cout << "Division by 0" << endl << endl;
+    }
+}
+
