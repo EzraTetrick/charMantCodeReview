@@ -21,6 +21,8 @@ void test_subtraction(char test[], char expected[], int len);
 void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
     int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
     string test_name, char expected[]);
+void reduce_fraction(int reduced[], int n, int d);
+int gcd(int a, int b);
 
 int main()
 {
@@ -63,7 +65,7 @@ int main()
     char expected[len] = {'0'};
 
     //addition tests
-    //test_addition(test, expected, len);
+    test_addition(test, expected, len);
 
     //subtraction tests
     //test_subtraction(test, expected, len);
@@ -154,14 +156,19 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
         new_numerator = numerator_1 - numerator_2;
     }
 
-    cout << "C: " << characteristic << "\tN: " << new_numerator << endl;
+    //reduce the fraction
+    int reduced [2] = {0};
+    reduce_fraction(reduced, new_numerator, denominator);
+    new_numerator = reduced[0];
+    denominator = reduced[1];
+
+    cout << "C: " << characteristic << "\tN: " << new_numerator << "\tD: " << denominator <<endl;
 
     //characteristic won't fit in result array
     if (count_digits(characteristic) > len - 1){
         return false;
     }
 
-    cout << characteristic << "\t" << new_numerator << "\t" << denominator << endl;
 
     convert_to_char(characteristic, new_numerator, denominator, result, len);
 
@@ -298,6 +305,33 @@ string test_name, char expected[]){
     clear_answers(result, expected, len);
 }
 
+//function to find the greatest common denominator
+int gcd(int n, int d) {
+    while (d != 0) {
+        int temp = d;
+        d = n % d;
+        n = temp;
+    }
+    //cout << "gcd: " << n << endl;
+    return n;
+}
+
+void reduce_fraction(int reduced[], int n, int d) {
+    //find absolute if n is negative
+    int abs_n = n;
+    if (n < 0){
+        abs_n = -n;
+    } 
+    //find greatest common denominator
+    int divisor = gcd(abs_n, d);
+    
+    //divide by gcd to reduce fraction
+    n /= divisor;
+    d /= divisor;
+
+    reduced[0] = n;
+    reduced[1] = d;
+}
 
 void test_addition(char test[], char expected[], int len){
     cout << "=====Addition Tests=====" << endl;
