@@ -22,21 +22,23 @@ void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
     int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
     string test_name, char expected[]);
 long long power(long long base, int exp);
+void reduce_fraction(int& n, int& d);
+int gcd(int a, int b);
 
 int main()
 {
     //this c-string, or array of 8 characters, ends with the null terminating character '\0'
     //['1', '2', '3', '.', '4', '5', '6', '\0']
-    const char number[] = "-1.0456"; 
+    const char number[] = "-1.0045600"; 
     int c, n, d;
 
     //if both conversions from c-string to integers can take place
     if(characteristic(number, c) && mantissa(number, n, d))
     {
         //do some math with c, n, and d
-        //cout<<"c: "<<c<<endl;
-        //cout<<"n: "<<n<<endl;
-        //cout<<"d: "<<d<<endl;
+        cout<<"c: "<<c<<endl;
+        cout<<"n: "<<n<<endl;
+        cout<<"d: "<<d<<endl;
     }
     else //at least one of the conversions failed
     {
@@ -130,10 +132,14 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
 
     int index = 0;
     int end_index = 0;
+    int start_index = 0;
     int place = 0;
 
     //find end of numString[]
     while (numString[end_index] != '\0'){
+        if (numString[end_index] == '.'){
+            start_index = end_index + 1;
+        }
         end_index++;
     }
     end_index--;
@@ -142,22 +148,28 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     index = end_index;
     //go through the array, starting at the end until we hit the decimal point
     while (numString[index] != '.'){
-        //if there is a leading zero, multiply the denominator by 10
-        if(numString[index] == '0'){
-            denominator *= 10;
-        }
         //convert the current index to an int and multiply it by 
         //a power of 10 to put it in the correct position
         numerator += (numString[index--] - '0') * power(10, place++);
     }
 
     //find denominator
+    //count the number of leading zeros and increase denominator accordingly
+    index = start_index;
+    while (numString[index] == '0' && index <= end_index){
+        denominator *= 10;
+        index++;
+    }
+
     int temp_numerator = numerator;
     //keep dividing by ten until the numerator is 0 to find the denominator
     while (temp_numerator != 0){
+        cout << temp_numerator << endl;
         temp_numerator /= 10;
         denominator *= 10;
     }
+
+    reduce_fraction(numerator, denominator);
 
     // cout << "numerator: " << numerator << endl;
     // cout << "denominator: " << denominator << endl;
@@ -340,11 +352,28 @@ int count_digits(int c){
     return num_digit;
 }
 
+//for clearing answers after testing function to allow reuse of variables
 void clear_answers(char a[], char b[], int len){
     for (int i = 0; i < len - 1; i++){
         a[i] = 0;
         b[i] = 0;
     }
+}
+
+//function to find the greatest common denominator
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+void reduce_fraction(int& n, int& d) {
+    int divisor = gcd(n, d);
+    n /= divisor;
+    d /= divisor;
 }
 
 //takes a function pointer as an argument and outputs where the function
