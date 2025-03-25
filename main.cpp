@@ -21,6 +21,7 @@ void test_subtraction(char test[], char expected[], int len);
 void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
     int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len,
     string test_name, char expected[]);
+long long power(long long base, int exp);
 
 int main()
 {
@@ -85,13 +86,81 @@ int main()
 //--
 bool characteristic(const char numString[], int& c)
 {
+    //cout << numString << endl;
+    c = 0;
+    int index = 0;
+    int start_index = 0;
+    int end_index = 0;
+    int place = 0;
+    bool negative = false;
+
+    //check if the number is negative and move the start index to 1 if it is
+    if (numString[0] == '-'){
+        negative = true;
+        start_index = 1;
+    }
+
+    //find the end of the characteristic
+    while (numString[end_index] != '.'){
+        //make sure we do not go out of bounds if there is no decimal point
+        if (numString[end_index] == '\0') {break;}
+        end_index++;
+    }
+    end_index--;
+
+    //cout << "start: " << start_index << "\tend: " << end_index << endl; 
+
+    index = end_index;
+    while (index >= start_index){
+        //cout << (numString[index] - '0') * power(10, place) << endl;
+        c += (numString[index--] - '0') * power(10, place++);
+    }
+
+    if(negative) {c = -c;}
+
+    // cout << "characteristic: " << c << endl;
 
     return true;
 }
 //--
 bool mantissa(const char numString[], int& numerator, int& denominator)
 {   
-    
+    numerator = 0;
+    denominator = 1;
+
+    int index = 0;
+    int end_index = 0;
+    int place = 0;
+
+    //find end of numString[]
+    while (numString[end_index] != '\0'){
+        end_index++;
+    }
+    end_index--;
+
+    //find numerator
+    index = end_index;
+    //go through the array, starting at the end until we hit the decimal point
+    while (numString[index] != '.'){
+        //if there is a leading zero, multiply the denominator by 10
+        if(numString[index] == '0'){
+            denominator *= 10;
+        }
+        //convert the current index to an int and multiply it by 
+        //a power of 10 to put it in the correct position
+        numerator += (numString[index--] - '0') * power(10, place++);
+    }
+
+    //find denominator
+    int temp_numerator = numerator;
+    //keep dividing by ten until the numerator is 0 to find the denominator
+    while (temp_numerator != 0){
+        temp_numerator /= 10;
+        denominator *= 10;
+    }
+
+    // cout << "numerator: " << numerator << endl;
+    // cout << "denominator: " << denominator << endl;
     
     return true;
 }
@@ -298,6 +367,13 @@ string test_name, char expected[]){
     clear_answers(result, expected, len);
 }
 
+long long power(long long base, int exp) {
+    long long result = 1;
+    for (int i = 0; i < exp; i++) {
+        result *= base;
+    }
+    return result;
+}
 
 void test_addition(char test[], char expected[], int len){
     cout << "=====Addition Tests=====" << endl;
