@@ -17,6 +17,7 @@ int main()
     //this c-string, or array of 8 characters, ends with the null terminating character '\0'
     //['1', '2', '3', '.', '4', '5', '6', '\0']
     const char number[] = "123.456"; 
+    cout << number[2] << endl;
     int c, n, d;
 
     //if both conversions from c-string to integers can take place
@@ -75,8 +76,47 @@ int main()
 //--
 bool characteristic(const char numString[], int& c)
 {
-    //hard coded return value to make the main() work
-    c = 123;
+    //create reference variables so the characteristic knows when to end the loop
+    const char period[] = ".";
+    const char zero[] = "0";
+    const char endLine[] = "\0";
+    int endOfNonSignificantIntegers = 0;
+    bool significantIntFound = false;
+    int i = 0;
+    //helper variables to get c
+    char charCArray[12];
+    int arrayIterator = 0;
+
+    //iterate through numString until the '.' is found
+    while (numString[i] != period[0])
+    {
+        //if the first significant integer is found, add it to the character array
+        if (numString[i] != zero[0] && !significantIntFound)
+        {
+            significantIntFound = true;
+            charCArray[arrayIterator] = numString[i];
+            arrayIterator++;
+        }
+        //if the first significant is already found, add to the character array
+        else if (significantIntFound)
+        {
+            i++;
+            charCArray[arrayIterator] = numString[i];
+            arrayIterator++;
+        }
+        //iterate
+        else
+        {
+            endOfNonSignificantIntegers++;
+            i++;
+        }
+    }
+
+    //set endline of the charArray
+    charCArray[i + 1] = endLine[0];
+    //set an int to the value of charCArray
+    c = atoi(charCArray);
+    cout << "characteristic = " << c << endl;
     return true;
 }
 //--
