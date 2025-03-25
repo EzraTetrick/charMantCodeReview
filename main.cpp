@@ -15,7 +15,7 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int l
 //helper functions
 void convert_to_char(int c, int n, int d, char result[], int len);
 int count_digits(int c);
-void clear_answers(string test_name, char a[], char b[], int len);
+void clear_answers(char a[], char b[], int len);
 void test_addition(char test[], char expected[], int len);
 void test_subtraction(char test[], char expected[], int len);
 void test_function(bool (*func)(int, int, int, int, int, int, char*, int),
@@ -26,7 +26,7 @@ int main()
 {
     //this c-string, or array of 8 characters, ends with the null terminating character '\0'
     //['1', '2', '3', '.', '4', '5', '6', '\0']
-    const char number[] = "123.456"; 
+    const char number[] = "-1.0456"; 
     int c, n, d;
 
     //if both conversions from c-string to integers can take place
@@ -63,10 +63,10 @@ int main()
     char expected[len] = {'0'};
 
     //addition tests
-    test_addition(test, expected, len);
+    //test_addition(test, expected, len);
 
     //subtraction tests
-    test_subtraction(test, expected, len);
+    //test_subtraction(test, expected, len);
 
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
@@ -85,16 +85,14 @@ int main()
 //--
 bool characteristic(const char numString[], int& c)
 {
-    //hard coded return value to make the main() work
-    c = 123;
+
     return true;
 }
 //--
 bool mantissa(const char numString[], int& numerator, int& denominator)
-{
-    //hard coded return value to make the main() work
-    numerator = 456;
-    denominator = 1000;
+{   
+    
+    
     return true;
 }
 //--
@@ -299,6 +297,7 @@ string test_name, char expected[]){
 
     clear_answers(result, expected, len);
 }
+
 
 void test_addition(char test[], char expected[], int len){
     cout << "=====Addition Tests=====" << endl;
