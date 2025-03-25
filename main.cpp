@@ -1,6 +1,5 @@
-
 #include <iostream>
-#include <cstring> // for testing, remove later
+#include <cstring>
 using namespace std;
 
 //required function prototypes
@@ -13,6 +12,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 
+//helper functions
 void convert_to_char(int c, int n, int d, char result[], int len);
 int count_digits(int c);
 void clear_answers(string test_name, char a[], char b[], int len);
@@ -105,14 +105,15 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
         return false;
     }
 
-    //check that denoms are greater than 0
+    //check that denoms are greater than 0 so 
     if(d1 <= 0 || d2 <=0){
         return false;
     }
 
     //add the two characteristics together
-    int characteristic = c1 + c2;
-    cout << "C: " << characteristic << endl;
+    long long characteristic = c1 + c2;
+
+    // cout << "C: " << characteristic << endl;
     cout << "c1: " << c1 << "\tn1: " << n1 << "\nc2: " << c2 << "\tn2: " << n2 << endl;
 
     //make the numerator negative if the characteristic is negative
@@ -123,10 +124,22 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
         n2 = -n2;
     }
 
-    //find common denom and add
-    int denominator = d1 * d2;
-    int numerator_1 = (n1 * d2);
-    int numerator_2 = (n2 * d1);
+    long long denominator = 0;
+    long long numerator_1 = 0;
+    long long numerator_2 = 0;
+
+    //find common denom if they are not the same
+    if (d1 != d2){
+        numerator_1 = static_cast<long long>(n1) * d2;
+        numerator_2 = static_cast<long long>(n2) * d1;
+        denominator = static_cast<long long>(d1) * d2;
+    }
+    //if they are the same then we can skip that step
+    else{
+        numerator_1 = n1;
+        numerator_2 = n2;
+        denominator = d1;
+    }
 
     //check if we need to borrow 1 from characteristic
     if (numerator_2 < 0 && numerator_1 > 0 && characteristic < 0){
@@ -135,7 +148,7 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 
     cout << "new_num_1: " << numerator_1 << "\tnew_num_2: " << numerator_2 << endl;
 
-    int new_numerator = 0;
+    long long new_numerator = 0;
     if (numerator_2 < 0){
         new_numerator = numerator_1 + numerator_2;
     }
@@ -150,11 +163,7 @@ bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
         return false;
     }
 
-    // cout << "C: " << characteristic << "\tN: " << numerator << endl;
-
-    //numerator %= denominator;
-
-    //cout << characteristic << "\t" << numerator << "\t" << denominator << endl;
+    cout << characteristic << "\t" << new_numerator << "\t" << denominator << endl;
 
     convert_to_char(characteristic, new_numerator, denominator, result, len);
 
@@ -171,8 +180,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 //--
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    //hard coded return value to make the code compile
-    //you will have to come up with an algorithm to multiply the two numbers
+    
     return true;
 }
 //--
@@ -375,14 +383,15 @@ void test_subtraction(char test[], char expected[], int len){
     test_function(subtract, 1, 75, 100, 3, 25, 100, test, len, "3.25 - 1.75", expected);
 
     //(-1.5) - 1.25
-    // expected[0] = '-';
-    // expected[1] = '2';
-    // expected[2] = '.';
-    // expected[3] = '7';
-    // expected[3] = '5';
-    // test_function(subtract, -1, 5, 10, 1, 25, 100, test, len, "(-1.5) - 1.25", expected);
+    expected[0] = '-';
+    expected[1] = '2';
+    expected[2] = '.';
+    expected[3] = '7';
+    expected[4] = '5';
+    test_function(subtract, -1, 5, 10, 1, 25, 100, test, len, "(-1.5) - 1.25", expected);
 
-    expected[0] = '0';
-    test_function(subtract, 1, 0, 10, 1, 0, 10, test, len, "1 - 1", expected);
+    //20.33333 - 10.11111
+    test_function(subtract, 20, 33333, 100000, 10, 111111, 1000000, 
+        test, len, "20.3333 - 10.1111", expected);
 
 }
