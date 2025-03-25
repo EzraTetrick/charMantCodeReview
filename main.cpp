@@ -122,9 +122,73 @@ bool characteristic(const char numString[], int& c)
 //--
 bool mantissa(const char numString[], int& numerator, int& denominator)
 {
-    //hard coded return value to make the main() work
-    numerator = 456;
-    denominator = 1000;
+    bool isMantissa = false;
+    //helper variables to find the end of the significant numbers
+    const char period[] = ".";
+    const char zero[] = "0";
+    const char endLine[] = "\0";
+    int i = 0;
+    //iterate through numString until we get to the mantissa
+    while (!isMantissa)
+    {
+        //if the end of the characteristic is found, move to the mantissa
+        if (numString[i] == period[0])
+        {
+            isMantissa = true;
+        }
+        i++;
+    }
+
+    //find the end of the significant variables
+    bool significantIntFound = false;
+    bool atEnd = false;
+    int endOfSigInts = i;
+    while (!significantIntFound)
+    {
+        //find the end of the numString
+        if (!atEnd)
+        {
+            if (numString[endOfSigInts] == endLine[0])
+            {
+                atEnd = true;
+            }
+            else
+            {
+                endOfSigInts++;
+            }
+        }
+
+        //if the end of the numString is found, find the end of the significant integers
+        if (atEnd)
+        {
+            if (numString[endOfSigInts] != zero[0] && numString[endOfSigInts] != endLine[0])
+            {
+                significantIntFound = true;
+            }
+            else
+            {
+                endOfSigInts--;
+            }
+        }
+    }
+
+    //helper variables to get c
+    char charNumeratorArray[12];
+    int arrayIterator = 0;
+    denominator = 10;
+    //iterate through i until the last significant integer
+    while (i != endOfSigInts)
+    {
+        charNumeratorArray[arrayIterator] = numString[i];
+        denominator *= 10;
+        arrayIterator++;
+        i++;
+    }
+    //finish creation of the numerator array and set the numerator to the value of said array
+    charNumeratorArray[arrayIterator] = numString[i];
+    charNumeratorArray[arrayIterator + 1] = endLine[0];
+    numerator = atoi(charNumeratorArray);
+
     return true;
 }
 //--
