@@ -68,7 +68,7 @@ int main()
     test_addition(test, expected, len);
 
     //subtraction tests
-    //test_subtraction(test, expected, len);
+    test_subtraction(test, expected, len);
 
 
     if(divide(c1, n1, d1, c2, n2, d2, answer, 10))
@@ -100,77 +100,50 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
 //--
 bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {   
-    //check if the array is grater than 0
+    // check if the array is greater than 0
     if (len <= 0){
         return false;
     }
 
-    //check that denoms are greater than 0 so 
-    if(d1 <= 0 || d2 <=0){
+    // check that denoms are greater than 0 so we dont divide by 0
+    if(d1 < 0 || d2 < 0){
         return false;
     }
 
-    //add the two characteristics together
-    long long characteristic = c1 + c2;
-
-    // cout << "C: " << characteristic << endl;
-    cout << "c1: " << c1 << "\tn1: " << n1 << "\nc2: " << c2 << "\tn2: " << n2 << endl;
-
-    //make the numerator negative if the characteristic is negative
+    // if the charateristic is negative, make the numerator negative too
     if(c1 < 0 && n1 >= 0){
         n1 = -n1;
     }
     if (c2 < 0 && n2 >= 0){
         n2 = -n2;
     }
+    
+    // convert to improper fractions
+    int num1 = c1 * d1 + n1;
+    int num2 = c2 * d2 + n2;
+    
+    // common denominator
+    int common_denom = d1 * d2;
+    int sum_num = num1 * d2 + num2 * d1;
+    
+    // convert back to characteristic and fraction
+    int result_char = sum_num / common_denom;
+    int result_num = sum_num % common_denom;
 
-    long long denominator = 0;
-    long long numerator_1 = 0;
-    long long numerator_2 = 0;
-
-    //find common denom if they are not the same
-    if (d1 != d2){
-        numerator_1 = static_cast<long long>(n1) * d2;
-        numerator_2 = static_cast<long long>(n2) * d1;
-        denominator = static_cast<long long>(d1) * d2;
-    }
-    //if they are the same then we can skip that step
-    else{
-        numerator_1 = n1;
-        numerator_2 = n2;
-        denominator = d1;
-    }
-
-    //check if we need to borrow 1 from characteristic
-    if (numerator_2 < 0 && numerator_1 > 0 && characteristic < 0){
-        characteristic += 1;
-    }
-
-    cout << "new_num_1: " << numerator_1 << "\tnew_num_2: " << numerator_2 << endl;
-
-    long long new_numerator = 0;
-    if (numerator_2 < 0){
-        new_numerator = numerator_1 + numerator_2;
-    }
-    else{
-        new_numerator = numerator_1 - numerator_2;
-    }
-
-    //reduce the fraction
+    // reduce the fraction
     int reduced [2] = {0};
-    reduce_fraction(reduced, new_numerator, denominator);
-    new_numerator = reduced[0];
-    denominator = reduced[1];
+    reduce_fraction(reduced, result_num, common_denom);
+    result_num = reduced[0];
+    common_denom = reduced[1];
 
-    cout << "C: " << characteristic << "\tN: " << new_numerator << "\tD: " << denominator <<endl;
+    //cout << "C: " << characteristic << "\tN: " << result_num << "\tD: " << common_denom <<endl;
 
-    //characteristic won't fit in result array
-    if (count_digits(characteristic) > len - 1){
+    // characteristic won't fit in result array
+    if (count_digits(result_char) > len - 1){
         return false;
     }
 
-
-    convert_to_char(characteristic, new_numerator, denominator, result, len);
+    convert_to_char(result_char, result_num, common_denom, result, len);
 
     return true;
 }
@@ -369,6 +342,11 @@ void test_addition(char test[], char expected[], int len){
     expected[2] = '.';
     expected[3] = '5';
     test_function(add, 1, 0, 10, -1, -5, 10, test, len, "1 + (-1.(-5))", expected);
+
+    //1.9 + 1.1
+    expected[0] = '3';
+
+    test_function(add, 1, 9, 10, 1, 1, 10, test, len, "1.1+ 1.9", expected);
 
     //check for characteristic too large
     if(!add(999999999, 0, 10, 999999999, 0, 10, test, len)){
