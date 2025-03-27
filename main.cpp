@@ -84,12 +84,18 @@ bool characteristic(const char numString[], int& c)
     bool significantIntFound = false;
     int i = 0;
     //helper variables to get c
-    char charCArray[12];
+    char charCArray[24];
     int arrayIterator = 0;
 
     //iterate through numString until the '.' is found
     while (numString[i] != period[0])
     {
+        if (i > 23)
+        {
+            cout << "Characteristic is too long!" << endl;
+            break;
+        }
+
         //if the first significant integer is found, add it to the character array
         if (numString[i] != zero[0] && !significantIntFound)
         {
@@ -116,7 +122,6 @@ bool characteristic(const char numString[], int& c)
     charCArray[i + 1] = endLine[0];
     //set an int to the value of charCArray
     c = atoi(charCArray);
-    cout << "characteristic = " << c << endl;
     return true;
 }
 //--
@@ -145,6 +150,12 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     int endOfSigInts = i;
     while (!significantIntFound)
     {
+        if (i > 23)
+        {
+            cout << "Characteristic is too long!" << endl;
+            break;
+        }
+
         //find the end of the numString
         if (!atEnd)
         {
@@ -173,7 +184,7 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     }
 
     //helper variables to get c
-    char charNumeratorArray[12];
+    char charNumeratorArray[24];
     int arrayIterator = 0;
     denominator = 10;
     //iterate through i until the last significant integer
