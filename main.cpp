@@ -150,7 +150,7 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     int endOfSigInts = i;
     while (!significantIntFound)
     {
-        if (i > 23)
+        if (endOfSigInts > 23)
         {
             cout << "Characteristic is too long!" << endl;
             break;
