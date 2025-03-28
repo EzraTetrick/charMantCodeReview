@@ -5,10 +5,8 @@ using namespace std;
 //required function prototypes
 bool characteristic(const char numString[], int& c);
 bool mantissa(const char numString[], int& numerator, int& denominator);
-
 bool add(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
-bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len); 
-
+bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 
@@ -51,13 +49,12 @@ int main()
     int c2, n2, d2;
 
     //initialize the values
-    c1 = 1;
-    n1 = 1;
-    d1 = 2;
+    c1 = 11;
+    n1 = 13;
+    d1 = 24;
 
     c2 = 2;
     n2 = 2;
-
     d2 = 3; 
 
     int len = 10;
@@ -274,21 +271,33 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 //--
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    
+    //convert all numbers into full fractions -> removing c and n and just having n
+
+    int finalNumerator = (c1*d1+n1) * (c2*d2+n2);
+    int finalDenom = d1*d2;
+
+    // make it negative if its negative
+    bool negative = false;
+    if (finalNumerator < 0) { negative = true; finalNumerator = -finalNumerator; }
+    if (finalDenom < 0)   { negative = true; finalDenom   = -finalDenom; }
+
+    // Obtain the integer part and remainder.
+    int integerPart = finalNumerator / finalDenom;
+    int remainder   = finalNumerator % finalDenom;
+
+    //uses convert char to convert the answer
+    convert_to_char( integerPart, remainder,1, result, len);
+
     return true;
 }
+
 //--
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    //you will have to come up with an algorithm to divide the two numbers
-    //hard coded return value to make the main() work
-    result[0] = '0';
-    result[1] = '.';
-    result[2] = '5';
-    result[3] = '6';
-    result[4] = '2';
-    result[5] = '5';
-    result[6] = '\0';
+    //flip the denominator and numerator then multiply
+    int finalNumerator = (c2*d2+n2);
+    // denominator is the numerator and the numerator is denominator
+    multiply(c1,n1,d1,d2,0,finalNumerator,result,len);
     
     return true;
 }
