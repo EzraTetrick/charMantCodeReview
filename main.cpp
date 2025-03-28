@@ -87,14 +87,130 @@ int main()
 //--
 bool characteristic(const char numString[], int& c)
 {
+    //create reference variables so the characteristic knows when to end the loop
+    const char period[] = ".";
+    const char zero[] = "0";
+    const char endLine[] = "\0";
+    int endOfNonSignificantIntegers = 0;
+    bool significantIntFound = false;
+    int i = 0;
+    //helper variables to get c
+    char charCArray[12];
+    int arrayIterator = 0;
 
+    //iterate through numString until the '.' is found
+    while (numString[i] != period[0])
+    {
+        //if the numString array does not find the '.' by this point, either the characteristic is too long or the number is not a float
+        if (i == 9 && numString[9] != period[0])
+        {
+            cout << "Using a non-floating point variable or characteristic is too long!!" << endl;
+            return false;
+        }
+
+        //if the first significant integer is found, add it to the character array
+        if (numString[i] != zero[0] && !significantIntFound)
+        {
+            significantIntFound = true;
+            charCArray[arrayIterator] = numString[i];
+            arrayIterator++;
+        }
+        //if the first significant is already found, add to the character array
+        else if (significantIntFound)
+        {
+            i++;
+            charCArray[arrayIterator] = numString[i];
+            arrayIterator++;
+        }
+        //iterate
+        else
+        {
+            endOfNonSignificantIntegers++;
+            i++;
+        }
+    }
+
+    //set endline of the charArray
+    charCArray[i + 1] = endLine[0];
+    //set an int to the value of charCArray
+    c = atoi(charCArray);
     return true;
 }
 //--
 bool mantissa(const char numString[], int& numerator, int& denominator)
-{   
-    
-    
+{
+    bool isMantissa = false;
+    //helper variables to find the end of the significant numbers
+    const char period[] = ".";
+    const char zero[] = "0";
+    const char endLine[] = "\0";
+    int i = 0;
+    //iterate through numString until we get to the mantissa
+    while (!isMantissa)
+    {
+        //if the end of the characteristic is found, move to the mantissa
+        if (numString[i] == period[0])
+        {
+            isMantissa = true;
+        }
+        i++;
+    }
+
+    //find the end of the significant variables
+    bool significantIntFound = false;
+    bool atEnd = false;
+    int endOfSigInts = i;
+    while (!significantIntFound)
+    {
+        if (endOfSigInts > 18)
+        {
+            cout << "Matissa is too long!" << endl;
+            return false;
+        }
+
+        //find the end of the numString
+        if (!atEnd)
+        {
+            if (numString[endOfSigInts] == endLine[0])
+            {
+                atEnd = true;
+            }
+            else
+            {
+                endOfSigInts++;
+            }
+        }
+
+        //if the end of the numString is found, find the end of the significant integers
+        if (atEnd)
+        {
+            if (numString[endOfSigInts] != zero[0] && numString[endOfSigInts] != endLine[0])
+            {
+                significantIntFound = true;
+            }
+            else
+            {
+                endOfSigInts--;
+            }
+        }
+    }
+
+    //helper variables to get c
+    char charNumeratorArray[10];
+    int arrayIterator = 0;
+    denominator = 10;
+    //iterate through i until the last significant integer
+    while (i != endOfSigInts)
+    {
+        charNumeratorArray[arrayIterator] = numString[i];
+        denominator *= 10;
+        arrayIterator++;
+        i++;
+    }
+    //finish creation of the numerator array and set the numerator to the value of said array
+    charNumeratorArray[arrayIterator] = numString[i];
+    charNumeratorArray[arrayIterator + 1] = endLine[0];
+    numerator = atoi(charNumeratorArray);
     return true;
 }
 //--
