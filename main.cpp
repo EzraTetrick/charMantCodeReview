@@ -16,7 +16,7 @@ int main()
 {
     //this c-string, or array of 8 characters, ends with the null terminating character '\0'
     //['1', '2', '3', '.', '4', '5', '6', '\0']
-    const char number[] = "123.456"; 
+    const char number[] = "12300000000000000000000.456"; 
     cout << number[2] << endl;
     int c, n, d;
 
@@ -84,16 +84,17 @@ bool characteristic(const char numString[], int& c)
     bool significantIntFound = false;
     int i = 0;
     //helper variables to get c
-    char charCArray[24];
+    char charCArray[12];
     int arrayIterator = 0;
 
     //iterate through numString until the '.' is found
     while (numString[i] != period[0])
     {
-        if (i > 23)
+        //if the numString array does not find the '.' by this point, either the characteristic is too long or the number is not a float
+        if (i == 9 && numString[9] != period[0])
         {
-            cout << "Characteristic is too long!" << endl;
-            break;
+            cout << "Using a non-floating point variable or characteristic is too long!!" << endl;
+            return false;
         }
 
         //if the first significant integer is found, add it to the character array
@@ -150,10 +151,10 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     int endOfSigInts = i;
     while (!significantIntFound)
     {
-        if (endOfSigInts > 23)
+        if (endOfSigInts > 18)
         {
-            cout << "Characteristic is too long!" << endl;
-            break;
+            cout << "Matissa is too long!" << endl;
+            return false;
         }
 
         //find the end of the numString
@@ -184,7 +185,7 @@ bool mantissa(const char numString[], int& numerator, int& denominator)
     }
 
     //helper variables to get c
-    char charNumeratorArray[24];
+    char charNumeratorArray[10];
     int arrayIterator = 0;
     denominator = 10;
     //iterate through i until the last significant integer
